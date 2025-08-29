@@ -1,0 +1,72 @@
+package com.javarush.karasAleksandra.view;
+
+import com.javarush.karasAleksandra.service.*;
+import com.javarush.karasAleksandra.util.InputValidator;
+
+/**
+ * Показать пункты меню, принять выбор пользователя,
+ * запросить нужные данные (путь к файлу) и вызвать один из методов
+ */
+public class ConsoleMenu {
+
+    private ApplicationService applicationService;
+
+    public ConsoleMenu(ApplicationService applicationService) {
+        this.applicationService = applicationService;
+    }
+
+    /**
+     * Запускает интерактивный главный цикл приложения.
+     *
+     * <p>Обеспечивает взаимодействие с пользователем через консольное меню,
+     * делегируя выполнение операций сервису {@link ApplicationService}.
+     *
+     * @implSpec Бесконечный цикл с отображением меню, валидацией ввода
+     * и выполнением выбранных криптографических операций.
+     * @see ApplicationService сервис для выполнения операций
+     * @see InputValidator валидатор пользовательского ввода
+     */
+    public void start() {
+        System.out.println("Добро пожаловать в криптоанализатор!\n");
+        System.out.print("\n⚠\uFE0F  Важно:\n" +
+                "• Расшифровка работает только после шифрования\n" +
+                "• Для файлов из других сессий используйте brute force\n");
+
+        while (true) {
+            outputMenu();
+            int choice = InputValidator.choiceMenu();
+            switch (choice) {
+                case 1 -> {
+                    System.out.print("Введите путь к файлу для чтения c оригинальным текстом: ");
+                    String filePath = InputValidator.filePath();
+                    applicationService.encryptFile(filePath);
+                }
+                case 2 -> {
+                    System.out.print("Введите путь к файлу с зашифрованным текстом: ");
+                    String filePath = InputValidator.filePath();
+                    applicationService.decryptFile(filePath);
+                }
+                case 3 -> {
+                    System.out.print("Введите путь к файлу с зашифрованным текстом: ");
+                    String filePath = InputValidator.filePath();
+                    applicationService.bruteForceFile(filePath);
+                }
+                default -> {
+                    System.out.println("Программа завершена! Всего доброго!");
+                    return;
+                }
+            }
+        }
+    }
+
+    /**
+     * Выводит меню
+     */
+    private static void outputMenu() {
+        System.out.print("Меню\n" +
+                "1. Шифрование\n" +
+                "2. Расшифровка ключом\n" +
+                "3. Brute force (Взлом)\n" +
+                "0. Выход\n");
+    }
+}
